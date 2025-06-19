@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
 const board = ref(Array(9).fill(''))
 const currentPlayer = ref('X')
