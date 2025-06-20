@@ -1,5 +1,5 @@
 export const ROUTE_NAMES = {
-  HOME: 'home',
+  HOME: '/',
   TICTACTOE: 'tictactoe',
   WORDGAME: 'wordGame',
   GOT:'got',
