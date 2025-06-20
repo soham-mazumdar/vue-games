@@ -27,7 +27,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import Header from "../home/Header.vue";
+import Header from "../../home/Header.vue";
 
 const board = ref(Array(9).fill(""));
 const currentPlayer = ref("X");

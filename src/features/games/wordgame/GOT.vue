@@ -4,21 +4,10 @@
     class="min-vh-100 d-flex justify-content-center align-items-center text-center w-100"
   >
   <div class="game">
-    <div v-if="!gameStarted">
-      
-      <div class="">
-        <div class="input-group">
-          <input type="text" class="form-control" v-model="wordInput">
-        </div>
-        <div class="form-text">Enter comma-separated words (e.g. a, ab, abc, abcd, abcde)</div>
-      </div>
-      <br />
-      <button class="btn btn-primary" @click="startGame">Start Game</button>
-    </div>
-    <div v-else>
+    <div>
       <p class="word">
         <span v-for="(letter, i) in selectedWord" :key="i">
-          {{ guessedLetters.includes(letter) ? letter : "_" }}
+        {{ !isAlpha(letter) ? letter : (guessedLetters.includes(letter) ? letter : "_") }}
         </span>
       </p>
 
@@ -34,6 +23,8 @@
         </span>
       </p>
 
+      <p v-if="showHint" class="border border-warning bg-warning-subtle d-inline-block py-2 px-4 rounded-2">{{ character }}</p>
+
       <p class="status">
         <span v-if="winner">🎉 You won!</span>
         <span v-else-if="loser"
@@ -44,8 +35,8 @@
 
       <div class="d-flex justify-content-center">
         <div class="btn-group" role="group">
-          <button class="btn btn-primary" @click="toNext">Next</button>
-          <button class="btn btn-primary" @click="reStart">Restart</button>
+          <button class="btn btn-primary" @click="startGame">Next</button>
+          <button class="btn btn-primary" :class="wrongGuesses.length<5?'disabled':''" @click="showHint = !showHint">Show Hint</button>
         </div>
       </div>
     </div>
@@ -54,13 +45,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import Header from "../home/Header.vue";
+import { ref, computed,onMounted } from "vue";
+import Header from "../../home/Header.vue";
+import { useQuotes } from "./composables/useQuotes.js";
 
-const wordInput = ref("");
-const customWords = ref([]);
-const gameStarted = ref(false);
+const { quote,character, fetchQuote } = useQuotes();
 
+console.log(character);
+console.log(quote);
+
+
+// const gameStarted = ref(false);
+const showHint = ref(false);
 const selectedWord = ref("");
 const guessedLetters = ref([]);
 
@@ -73,57 +69,50 @@ const wrongGuesses = computed(() =>
   )
 );
 
+function isAlpha(char) {
+  return /^[A-Z]$/i.test(char);
+}
+
 const winner = computed(() =>
   selectedWord.value
     .split("")
-    .every((l) => guessedLetters.value.includes(l.toUpperCase()))
+    .every((l) =>
+      !isAlpha(l) || guessedLetters.value.includes(l.toUpperCase())
+    )
 );
 
 const loser = computed(() => wrongGuesses.value.length >= maxWrong);
 const gameOver = computed(() => winner.value || loser.value);
 
 function guess(letter) {
-  guessedLetters.value.push(letter.toUpperCase());
+  if (!gameOver.value && !guessedLetters.value.includes(letter.toUpperCase())) {
+    guessedLetters.value.push(letter.toUpperCase());
+  }
 }
 
-function toNext() {
-  selectedWord.value = getRandomWord();
+async function startGame() {
+  await fetchQuote();
+  selectedWord.value = quote.value;
   guessedLetters.value = [];
-  
+//   gameStarted.value = true;
+}
+
+async function toNext() {
+  await fetchQuote();
+  selectedWord.value = quote.value;
+  guessedLetters.value = [];
 }
 
 function reStart() {
-  
   guessedLetters.value = [];
-  wordInput.value = "";
-  customWords.value = [];
-  gameStarted.value = false;
-
   selectedWord.value = "";
-  guessedLetters.value = [];
+//   gameStarted.value = false;
 }
 
-function startGame() {
-  customWords.value = wordInput.value
-    .split(",")
-    .map((word) => word.trim().toUpperCase())
-    .filter((word) => word.length > 0);
+onMounted(() => {
+  startGame();
+});
 
-  if (customWords.value.length === 0) {
-    alert("Please enter at least one word.");
-    return;
-  }
-
-  selectedWord.value = getRandomWord();
-  guessedLetters.value = [];
-  gameStarted.value = true;
-}
-
-function getRandomWord() {
-  return customWords.value[
-    Math.floor(Math.random() * customWords.value.length)
-  ];
-}
 </script>
 
 <style scoped>

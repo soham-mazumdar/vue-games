@@ -3,4 +3,6 @@ export const ROUTE_NAMES = {
   TICTACTOE: 'tictactoe',
   WORDGAME: 'wordGame',
   GOT:'got',
+  DASHBOARD:'dashboard',
+  LOGIN:'login',
 }
