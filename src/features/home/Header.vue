@@ -29,6 +29,11 @@
           :to="{ name: ROUTE_NAMES.WORDGAME }"
           >Guess Word</router-link
         >
+        <router-link
+          class="btn btn-primary"
+          :to="{ name: ROUTE_NAMES.GOT }"
+          >Game Of Thrones</router-link
+        >
       </div>
     </div>
   </div>
