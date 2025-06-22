@@ -1,6 +1,6 @@
 <template>
   <div class="p-2 sticky-top">
-    <div class="d-flex justify-content-center"></div>
+    
     <hr />
     <div class="d-flex justify-content-center">
       <div class="btn-group" role="group">

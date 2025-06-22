@@ -1,22 +1,26 @@
 <template>
-  <router-view v-if="isReady" />
+  <router-view/>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { useRouter } from 'vue-router';
+import { getCurrentUser } from 'vuefire'
+
 
 const isReady = ref(false);
 const router = useRouter();
+const user = getCurrentUser();
 
 onMounted(() => {
-  onAuthStateChanged(auth, user => {
-    isReady.value = true;
-    if (user && router.currentRoute.value.path === '/login') {
-      router.push('/dashboard');
-    }
-  });
+  console.log('onMounted');
+  
+  if (user.value) {
+    console.log('val');
+    router.push('/dashboard')
+  }
+  
 });
 
 </script>

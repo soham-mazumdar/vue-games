@@ -6,7 +6,9 @@ import WordGame from "../features/games/wordgame/WordGame.vue";
 import GOT from "../features/games/wordgame/GOT.vue";
 import { ROUTE_NAMES } from "./NamedRoute";
 import Dashboard from "@/features/dashboard/Dashboard.vue";
-import { auth } from '../firebase';
+// import { auth } from '../firebase';
+import { getCurrentUser } from 'vuefire'
+
 
 
 const routes = [
@@ -49,17 +51,20 @@ const router = createRouter({
 });
 
 // Guard
-router.beforeEach((to, from, next) => {
-  const user = auth.currentUser;
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+router.beforeEach(async (to, from, next) => {
+  const user = await getCurrentUser()
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
   if (requiresAuth && !user) {
-    next('/login');
+    console.log('🔐 Redirect to login')
+    next('/login')
   } else if (to.path === '/login' && user) {
-    next('/dashboard'); // If logged in, redirect away from login
+    console.log('✅ Already logged in, redirecting to dashboard')
+    next('/dashboard')
   } else {
-    next();
+    console.log('➡️ Proceed')
+    next()
   }
-});
+})
 
 export default router;
